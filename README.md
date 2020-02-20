@@ -1,0 +1,1 @@
+[![Coverage Status](https://coveralls.io/repos/github/antsupovsa/YandexMarketXml/badge.svg?branch=master)](https://coveralls.io/github/antsupovsa/YandexMarketXml?branch=master)
