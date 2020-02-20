@@ -3,7 +3,6 @@ on: [push, pull_request]
 jobs:
 
   test:
-    name: Build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -18,16 +17,16 @@ jobs:
       - run: go test -v -coverprofile=profile.cov ./...
 
       - name: Send coverage
-          uses: shogo82148/actions-goveralls@v1
-          with:
-            path-to-profile: profile.cov
-            parallel: true
+        uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: profile.cov
+          parallel: true
 
-    # notifies that all test jobs are finished.
-    finish:
-      needs: test
-      runs-on: ubuntu-latest
-      steps:
-        - uses: shogo82148/actions-goveralls@v1
-          with:
-            parallel-finished: true
+  # notifies that all test jobs are finished.
+  finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: shogo82148/actions-goveralls@v1
+        with:
+          parallel-finished: true
