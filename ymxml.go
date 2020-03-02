@@ -129,6 +129,15 @@ func YandexMarketXML(fileName string) *yandexMarketYML {
 	return &yandexMarketYML{FileName: fileName}
 }
 
+func (ymx *yandexMarketYML) CharsetReader(charset string, input io.Reader) (io.Reader, error) {
+	switch charset {
+	case "windows-1251":
+		return charmap.Windows1251.NewDecoder().Reader(input), nil
+	default:
+		return nil, fmt.Errorf("unknown charset: %s", charset)
+	}
+}
+
 func (ymx *yandexMarketYML) Parse() (ymlc YmlCatalog, err error) {
 	xmlFile, err := os.Open(ymx.FileName)
 	if err != nil {
@@ -136,14 +145,7 @@ func (ymx *yandexMarketYML) Parse() (ymlc YmlCatalog, err error) {
 		return
 	}
 	d := xml.NewDecoder(xmlFile)
-	d.CharsetReader = func(charset string, input io.Reader) (io.Reader, error) {
-		switch charset {
-		case "windows-1251":
-			return charmap.Windows1251.NewDecoder().Reader(input), nil
-		default:
-			return nil, fmt.Errorf("unknown charset: %s", charset)
-		}
-	}
+	d.CharsetReader = ymx.CharsetReader
 	err = d.Decode(&ymlc)
 	if err != nil {
 		fmt.Printf("error: %v", err)

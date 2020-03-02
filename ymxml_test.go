@@ -66,8 +66,9 @@ func mockOffers() []Offer {
 
 func TestYandexMarketYML_Parse(t *testing.T) {
 	v, err := YandexMarketXML("testdata/vendorModel.xml").Parse()
+
 	if err != nil {
-		fmt.Printf("%v", err)
+		assert.Error(t, err)
 	}
 	assert.Equal(t, v.Shop.Name, "BestSeller")
 	assert.Equal(t, v.Date.Time, time.Date(2019, 11, 01, 17, 22, 0, 0, v.Date.Location()))
