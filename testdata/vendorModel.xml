@@ -53,6 +53,7 @@
                 <country_of_origin>Россия</country_of_origin>
                 <barcode>9876543210</barcode>
                 <weight>1.03</weight>
+                <expiry>2019-11-01 17:22</expiry>
                 <dimensions>20.800/23.500/9.000</dimensions>
             </offer>
         </offers>       <!-- товары магазина -->

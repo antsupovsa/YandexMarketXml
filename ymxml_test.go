@@ -7,44 +7,11 @@ import (
 	"time"
 )
 
-func TestYandexMarketYML_Parse(t *testing.T) {
-	v, err := YandexMarketXML("testdata/vendorModel.xml").Parse()
+func mockOffers() []Offer {
+	utc, err := time.LoadLocation("UTC")
 	if err != nil {
-		fmt.Printf("%v", err)
+		fmt.Print(err)
 	}
-	assert.Equal(t, v.Shop.Name, "BestSeller")
-	assert.Equal(t, v.Date.Time, time.Date(2019, 11, 01, 17, 22, 0, 0, v.Date.Location()))
-
-	var categories []Category
-	categories = append(categories, Category{
-		Name: "Бытовая техника",
-		ID:   "1",
-	})
-	categories = append(categories, Category{
-		Name:     "Мелкая техника для кухни",
-		ID:       "10",
-		ParentId: "1",
-	})
-	categories = append(categories, Category{
-		Name:     "Сэндвичницы и приборы для выпечки",
-		ID:       "101",
-		ParentId: "10",
-	})
-	assert.ElementsMatch(t, v.Shop.Categories, categories, "Categories not matched")
-
-	var currencies []Currency
-	currencies = append(currencies, Currency{
-		ID:   "RUR",
-		Rate: 1,
-		Plus: 0,
-	})
-	currencies = append(currencies, Currency{
-		ID:   "USD",
-		Rate: 60,
-		Plus: 0,
-	})
-	assert.ElementsMatch(t, v.Shop.Currencies, currencies, "Currencies not matched")
-
 	var offers []Offer
 
 	var deliveryOptions []Option
@@ -91,7 +58,67 @@ func TestYandexMarketYML_Parse(t *testing.T) {
 		Barcode:              "9876543210",
 		Param:                params,
 		Weight:               "1.03",
+		Expiry:               customTime{time.Date(2019, 11, 01, 17, 22, 0, 0, utc)},
 		Dimensions:           "20.800/23.500/9.000",
 	})
-	assert.ElementsMatch(t, v.Shop.Offers, offers)
+	return offers
+}
+
+func TestYandexMarketYML_Parse(t *testing.T) {
+	v, err := YandexMarketXML("testdata/vendorModel.xml").Parse()
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	assert.Equal(t, v.Shop.Name, "BestSeller")
+	assert.Equal(t, v.Date.Time, time.Date(2019, 11, 01, 17, 22, 0, 0, v.Date.Location()))
+
+	var categories []Category
+	categories = append(categories, Category{
+		Name: "Бытовая техника",
+		ID:   "1",
+	})
+	categories = append(categories, Category{
+		Name:     "Мелкая техника для кухни",
+		ID:       "10",
+		ParentId: "1",
+	})
+	categories = append(categories, Category{
+		Name:     "Сэндвичницы и приборы для выпечки",
+		ID:       "101",
+		ParentId: "10",
+	})
+	assert.ElementsMatch(t, v.Shop.Categories, categories, "Categories not matched")
+
+	var currencies []Currency
+	currencies = append(currencies, Currency{
+		ID:   "RUR",
+		Rate: 1,
+		Plus: 0,
+	})
+	currencies = append(currencies, Currency{
+		ID:   "USD",
+		Rate: 60,
+		Plus: 0,
+	})
+	assert.ElementsMatch(t, v.Shop.Currencies, currencies, "Currencies not matched")
+
+	assert.ElementsMatch(t, v.Shop.Offers, mockOffers())
+}
+
+func TestCustomTime_UnmarshalXML(t *testing.T) {
+	v, err := YandexMarketXML("testdata/vendorModel.xml").Parse()
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	for _, offer := range v.Shop.Offers {
+		assert.Equal(t, offer.Expiry.Time, time.Date(2019, 11, 01, 17, 22, 0, 0, v.Date.Location()))
+	}
+}
+
+func TestCustomTime_UnmarshalXMLAttr(t *testing.T) {
+	v, err := YandexMarketXML("testdata/vendorModel.xml").Parse()
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	assert.Equal(t, v.Date.Time, time.Date(2019, 11, 01, 17, 22, 0, 0, v.Date.Location()))
 }
