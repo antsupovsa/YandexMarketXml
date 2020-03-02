@@ -3,6 +3,7 @@ package YandexMarketXml
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 	"time"
 )
@@ -64,9 +65,30 @@ func mockOffers() []Offer {
 	return offers
 }
 
-func TestYandexMarketYML_Parse(t *testing.T) {
-	v, err := YandexMarketXML("testdata/vendorModel.xml").Parse()
+func TestYandexMarketYML_CharsetReader(t *testing.T) {
+	i := strings.NewReader("This is a test string")
+	_, err := YandexMarketXML("testdata/vendorModel.xml").CharsetReader("windows-1251", i)
 
+	assert.NoError(t, err)
+
+	_, err = YandexMarketXML("testdata/vendorModel.xml").CharsetReader("utf-8", i)
+	if err != nil {
+		assert.Error(t, err)
+	}
+}
+
+func TestYandexMarketYML_Parse(t *testing.T) {
+	v, err := YandexMarketXML("testdata/vendorModelFail.xml").Parse()
+	if err != nil {
+		assert.Error(t, err)
+	}
+
+	v, err = YandexMarketXML("testdata/vendorModel1.xml").Parse()
+	if err != nil {
+		assert.Error(t, err)
+	}
+
+	v, err = YandexMarketXML("testdata/vendorModel.xml").Parse()
 	if err != nil {
 		assert.Error(t, err)
 	}
@@ -107,19 +129,25 @@ func TestYandexMarketYML_Parse(t *testing.T) {
 }
 
 func TestCustomTime_UnmarshalXML(t *testing.T) {
-	v, err := YandexMarketXML("testdata/vendorModel.xml").Parse()
+	v, err := YandexMarketXML("testdata/vendorModelDate.xml").Parse()
 	if err != nil {
-		fmt.Printf("%v", err)
+		assert.Error(t, err)
 	}
+
+	v, err = YandexMarketXML("testdata/vendorModel.xml").Parse()
+	assert.NoError(t, err)
 	for _, offer := range v.Shop.Offers {
 		assert.Equal(t, offer.Expiry.Time, time.Date(2019, 11, 01, 17, 22, 0, 0, v.Date.Location()))
 	}
+
 }
 
 func TestCustomTime_UnmarshalXMLAttr(t *testing.T) {
-	v, err := YandexMarketXML("testdata/vendorModel.xml").Parse()
+	v, err := YandexMarketXML("testdata/vendorModelDate.xml").Parse()
 	if err != nil {
-		fmt.Printf("%v", err)
+		assert.Error(t, err)
 	}
+	v, err = YandexMarketXML("testdata/vendorModel.xml").Parse()
+	assert.NoError(t, err)
 	assert.Equal(t, v.Date.Time, time.Date(2019, 11, 01, 17, 22, 0, 0, v.Date.Location()))
 }

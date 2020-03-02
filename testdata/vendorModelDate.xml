@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yml_catalog date="2019-11-01">
+    <shop>
+        <name>BestSeller</name>
+        <company>Tne Best inc.</company>
+        <url>http://best.seller.ru</url>
+        <platform>uCoz</platform>
+        <version>1.0</version>
+        <agency>Технологичные решения</agency>
+        <email>example-email@gmail.com</email>
+        <currencies>
+            <currency id="RUR" rate="1"/>
+            <currency id="USD" rate="60"/>
+        </currencies>
+        <categories>
+            <category id="1">Бытовая техника</category>
+            <category id="10" parentId="1">Мелкая техника для кухни</category>
+            <category id="101" parentId="10">Сэндвичницы и приборы для выпечки</category>
+        </categories>
+        <delivery-options>      <!-- условия доставки -->
+            <option cost="200" days="1"/>
+        </delivery-options>
+        <pickup-options>        <!-- условия самовывоза -->
+            <option cost="200" days="1"/>
+        </pickup-options>
+        <enable_auto_discounts>true</enable_auto_discounts>
+        <offers>
+            <offer id="12346" type="vendor.model" bid="60">
+                <typePrefix>Сэндвичница</typePrefix>
+                <vendor>Brand</vendor>
+                <model>K220Y9</model>
+                <vendorCode>A1234567B</vendorCode>
+                <url>http://best.seller.ru/product_page.asp?pid=12345</url>
+                <price>1099</price>
+                <oldprice>1399</oldprice>
+                <enable_auto_discounts>false</enable_auto_discounts>
+                <currencyId>RUR</currencyId>
+                <categoryId>101</categoryId>
+                <picture>http://best.seller.ru/img/device56789.jpg</picture>
+                <delivery>true</delivery>
+                <pickup>true</pickup>
+                <delivery-options>
+                    <option cost="300" days="1-3"/>
+                </delivery-options>
+                <pickup-options>
+                    <option cost="350" days="1" order-before="12"/>
+                </pickup-options>
+                <param name="Мощность">750 Вт</param>
+                <description>Сэндвичница 2 в 1: можно приготовить как сэндвичи, так и вафли.</description>
+                <sales_notes>Наличные, Visa/Mastercard, б/н расчет</sales_notes>
+                <store>false</store>
+                <manufacturer_warranty>true</manufacturer_warranty>
+                <country_of_origin>Россия</country_of_origin>
+                <barcode>9876543210</barcode>
+                <weight>1.03</weight>
+                <expiry>2019-11-01</expiry>
+                <dimensions>20.800/23.500/9.000</dimensions>
+            </offer>
+        </offers>       <!-- товары магазина -->
+        <gifts/>        <!-- подарки не из прайс-листа -->
+        <promos/>       <!-- акции -->
+    </shop>
+</yml_catalog>

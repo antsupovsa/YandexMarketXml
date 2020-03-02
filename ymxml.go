@@ -141,14 +141,12 @@ func (ymx *yandexMarketYML) CharsetReader(charset string, input io.Reader) (io.R
 func (ymx *yandexMarketYML) Parse() (ymlc YmlCatalog, err error) {
 	xmlFile, err := os.Open(ymx.FileName)
 	if err != nil {
-		fmt.Printf("error: %v", err)
-		return
+		return ymlc, err
 	}
 	d := xml.NewDecoder(xmlFile)
 	d.CharsetReader = ymx.CharsetReader
 	err = d.Decode(&ymlc)
 	if err != nil {
-		fmt.Printf("error: %v", err)
 		return ymlc, err
 	}
 	return ymlc, err
