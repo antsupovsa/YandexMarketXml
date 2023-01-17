@@ -2,10 +2,11 @@ package YandexMarketXml
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func mockOffers() []Offer {

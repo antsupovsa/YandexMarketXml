@@ -3,13 +3,15 @@ package YandexMarketXml
 import (
 	"encoding/xml"
 	"fmt"
-	"golang.org/x/text/encoding/charmap"
 	"io"
 	"os"
 	"time"
+
+	"github.com/pkg/errors"
+	"golang.org/x/text/encoding/charmap"
 )
 
-type yandexMarketYML struct {
+type YandexMarketYML struct {
 	FileName string
 }
 
@@ -24,19 +26,24 @@ type customTime struct {
 }
 
 func (c *customTime) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	const shortForm = "2006-01-02 15:04" // yyyymmdd date format
+	const shortForm = "2006-01-02 15:04"
 	var v string
-	d.DecodeElement(&v, &start)
+	if err := d.DecodeElement(&v, &start); err != nil {
+		return errors.Wrap(err, "decode element")
+	}
 	parse, err := time.Parse(shortForm, v)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "parse time")
 	}
 	*c = customTime{parse}
 	return nil
 }
 
 func (c *customTime) UnmarshalXMLAttr(attr xml.Attr) error {
-	parse, _ := time.Parse("2006-01-02 15:04", attr.Value)
+	parse, err := time.Parse("2006-01-02 15:04", attr.Value)
+	if err != nil {
+		return errors.Wrap(err, "parse time")
+	}
 	*c = customTime{parse}
 	return nil
 }
@@ -125,11 +132,11 @@ type Offer struct {
 	GroupID              string     `xml:"group_id,attr,omitempty"`
 }
 
-func YandexMarketXML(fileName string) *yandexMarketYML {
-	return &yandexMarketYML{FileName: fileName}
+func YandexMarketXML(fileName string) *YandexMarketYML {
+	return &YandexMarketYML{FileName: fileName}
 }
 
-func (ymx *yandexMarketYML) CharsetReader(charset string, input io.Reader) (io.Reader, error) {
+func (ymx *YandexMarketYML) CharsetReader(charset string, input io.Reader) (io.Reader, error) {
 	switch charset {
 	case "windows-1251":
 		return charmap.Windows1251.NewDecoder().Reader(input), nil
@@ -138,16 +145,17 @@ func (ymx *yandexMarketYML) CharsetReader(charset string, input io.Reader) (io.R
 	}
 }
 
-func (ymx *yandexMarketYML) Parse() (ymlc YmlCatalog, err error) {
+func (ymx *YandexMarketYML) Parse() (YmlCatalog, error) {
+	var ymlc YmlCatalog
 	xmlFile, err := os.Open(ymx.FileName)
 	if err != nil {
-		return ymlc, err
+		return ymlc, errors.Wrap(err, "open file")
 	}
 	d := xml.NewDecoder(xmlFile)
 	d.CharsetReader = ymx.CharsetReader
 	err = d.Decode(&ymlc)
 	if err != nil {
-		return ymlc, err
+		return ymlc, errors.Wrap(err, "decode yaml")
 	}
 	return ymlc, err
 }
